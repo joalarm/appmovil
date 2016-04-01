@@ -1,0 +1,30 @@
+<ion-nav-bar>
+</ion-nav-bar>
+<ion-view title="Calificar">
+  <ion-nav-buttons side="left">
+    <button class="button icon ion-navicon"></button>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="right">
+    <button class="button" ng-click="volver()">Volver</button>
+  </ion-nav-buttons>
+  <ion-content>
+  <div class="col col-center padding">
+    <h3 style="font-family: Custom;">El dia [dia] visitaste [establecimiento], como fue tu experiencia?</h3>
+  <div class="list list-inset">
+    <label class="item item-input item-select">
+      <span class="input-label">Te sientes:</span>
+      <select>
+        <option>Satisfecho</option>
+        <option>Conforme</option>
+        <option>Insatisfecho</option>
+      </select>
+    </label>
+    <label class="item item-input item-stacked-label">
+      <span class="input-label">Que más nos puedes decir?</span>
+      <textarea></textarea>
+    </label>
+    <button class="item button button-assertive button-block">Enviar</button>
+  </div>
+</div>
+</ion-content>
+</ion-view>

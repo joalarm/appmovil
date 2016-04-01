@@ -1,0 +1,40 @@
+
+  <ion-nav-bar>
+  </ion-nav-bar>
+  <ion-view title="Resultados">
+    <ion-nav-buttons side="left">
+      <button class="button icon ion-navicon"></button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+      <button class="button" ng-click="volver()">Volver</button>
+    </ion-nav-buttons>
+    <div class="bar bar-subheader subtitulo item-icon-right">
+      <p class="subtitulo1">{{total}} coincidencias</p>
+      <button class="button button-clear icon ion-more" ng-click="openModal()"></button>
+    </div>
+    <ion-content class="has-subheader padding">
+          <ion-list>
+            <ion-item class="item-thumbnail-left item-text-wrap" ng-repeat="establecimiento in establecimientos" href="#/detail/{{establecimiento.id}}">
+                <img ng-src="http://appmovil.joalar.com/web/img/establecimientos/{{establecimiento.Icono}}">
+                <h2>{{establecimiento.Nombre}}</h2>
+                <p>{{establecimiento.Direccion}}</p>
+                <p>{{establecimiento.Telefono}}</p>
+            </ion-item>
+          </ion-list>
+
+          <script id="modal.html" type="text/ng-template">
+            <ion-modal-view class="modalCustom">
+              <ion-content>
+                <div class="list">
+                  <ion-toggle ng-repeat="servicio in servicios" name="selected[]" value="{{servicio.id}}" ng-checked="selection.indexOf(servicio) > -1" ng-click="toggleSelection(servicio)" toggle-class="toggle-assertive">{{servicio.Nombre}}</ion-toggle>
+                </div>
+              </ion-content>
+              <ion-footer-bar class="bar-assertive">
+                <div class="button-bar">
+                  <button class="button" ng-click="closeModal()">Aceptar</button>
+                </div>
+              </ion-footer-bar>
+            </ion-modal-view>
+          </script>
+    </ion-content>
+  </ion-view>

@@ -1,0 +1,35 @@
+<ion-nav-bar>
+</ion-nav-bar>
+<ion-view title="Registro">
+  <ion-nav-buttons side="left">
+    <button class="button icon ion-navicon"></button>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="right">
+    <button class="button" ng-click="volver()">Volver</button>
+  </ion-nav-buttons>
+  <ion-content>
+    <div class="col col-center">
+    <div class="list list-inset">
+      <label class="item item-input">
+        <span class="input-label">E-mail</span>
+        <input type="email" placeholder="ejemplo@ejemplo.com">
+      </label>
+      <label class="item item-input item-select">
+        <span class="input-label">Genero</span>
+        <select>
+          <option>Femenino</option>
+          <option>Masculino</option>
+          <option>Otro</option>
+        </select>
+      </label>
+      <label class="item item-input">
+        <span class="input-label">Fecha de Nacimiento</span>
+        <input type="date" placeholder="01/01/1901">
+      </label>
+      <button class="item button button-assertive button-block">Registrarse</button>
+      <button class="item button button-assertive button-block">Iniciar Sesión</button>
+    </div>
+  </div>
+  </ion-content>
+
+</ion-view>
