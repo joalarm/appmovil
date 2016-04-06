@@ -1,0 +1,32 @@
+<ion-side-menus>
+  <ion-side-menu-content>
+    <ion-nav-bar class="bar-assertive" style="font-family: Custom;">
+      <ion-nav-buttons side="left">
+        <button class="button icon ion-navicon" menu-toggle="left"></button>
+      </ion-nav-buttons>
+    </ion-nav-bar>
+    <ion-nav-view name="menuContent" animation="slide-left-right"></ion-nav-view>
+  </ion-side-menu-content>
+
+  <ion-side-menu side="left">
+    <header class="bar bar-header bar-assertive">
+      <h1 class="title" style="font-family: Custom;">Opciones</h1>
+    </header>
+    <ion-content class="has-header">
+      <ion-list>
+        <ion-item menu-close href="#/app/" style="font-family: Custom;">
+          Inicio
+        </ion-item>
+        <ion-item menu-close href="#/app/checkins" style="font-family: Custom;">
+          Mis Check-In
+        </ion-item>
+        <ion-item menu-close href="#/app/login/-1" style="font-family: Custom;">
+          Mis Datos
+        </ion-item>
+        <ion-item menu-close href="#/app/acerca" style="font-family: Custom;">
+          Acerca de...
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-side-menu>
+</ion-side-menus>

@@ -1,10 +1,7 @@
 <ion-nav-bar>
 </ion-nav-bar>
 <ion-view title="Registro">
-  <ion-nav-buttons side="left">
-    <button class="button icon ion-navicon"></button>
-  </ion-nav-buttons>
-  <ion-nav-buttons side="right">
+<ion-nav-buttons side="right">
     <button class="button" ng-click="volver()">Volver</button>
   </ion-nav-buttons>
   <ion-content>
@@ -12,22 +9,22 @@
     <div class="list list-inset">
       <label class="item item-input">
         <span class="input-label">E-mail</span>
-        <input type="email" placeholder="ejemplo@ejemplo.com">
+        <input type="email" placeholder="ejemplo@ejemplo.com" ng-model="email">
       </label>
       <label class="item item-input item-select">
         <span class="input-label">Genero</span>
-        <select>
-          <option>Femenino</option>
-          <option>Masculino</option>
-          <option>Otro</option>
+        <select ng-model="genero">
+          <option value="Femenino">Femenino</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Otro">Otro</option>
         </select>
       </label>
       <label class="item item-input">
         <span class="input-label">Fecha de Nacimiento</span>
-        <input type="date" placeholder="01/01/1901">
+        <input type="date" placeholder="1901-01-01" min="1901-01-01" ng-model="f_nac.value">
       </label>
-      <button class="item button button-assertive button-block">Registrarse</button>
-      <button class="item button button-assertive button-block">Iniciar Sesión</button>
+      <button class="item button button-assertive button-block" ng-click="registrarCliente()">Registrarse</button>
+      <button class="item button button-assertive button-block" ng-click="login()">Iniciar Sesión</button>
     </div>
   </div>
   </ion-content>

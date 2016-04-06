@@ -23,57 +23,100 @@ angular.module('starter', ['ionic', 'ngCordova'])
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider){
+.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider){
+  $ionicConfigProvider.tabs.position('bottom');
+
   $stateProvider
-    .state('home',{
+    .state('app',{
+      url: '/app',
+      abstract: true,
+      templateUrl: 'templates/menu.html',
+      controller: 'appController'
+    })
+
+    .state('app.home',{
       url: '/',
-      templateUrl: 'templates/home.html',
-      controller: 'homeController'
+      views: {
+        'menuContent': {
+            templateUrl: 'templates/home.html',
+              controller: 'homeController'
+            }
+        }
     })
 
-    .state('search',{
+    .state('app.search',{
       url: '/search',
-      templateUrl: 'templates/search.html',
-      controller: 'searchController'
+      views: {
+        'menuContent': {
+            templateUrl: 'templates/search.html',
+            controller: 'searchController'
+          }
+        }
     })
 
-    .state('detail',{
+    .state('app.detail',{
       url: '/detail/:id',
-      templateUrl: 'templates/detail.html',
-      controller: 'detailController'
+      views: {
+        'menuContent': {
+            templateUrl: 'templates/detail.html',
+            controller: 'detailController'
+          }
+        }
     })
 
-    .state('checkins',{
+    .state('app.checkins',{
       url: '/checkins',
-      templateUrl: 'templates/checkins.html',
-      controller: 'checkinController'
+      views: {
+        'menuContent': {
+            templateUrl: 'templates/checkins.html',
+            controller: 'checkinController'
+          }
+        }
     })
 
-    .state('login',{
+    .state('app.login',{
       url: '/login/:return',
-      templateUrl: 'templates/login.html',
-      controller: 'loginController'
+      views: {
+        'menuContent': {
+            templateUrl: 'templates/login.html',
+            controller: 'loginController'
+          }
+        }
     })
 
-    .state('register',{
+    .state('app.register',{
       url: '/register/:return',
-      templateUrl: 'templates/register.html',
-      controller: 'registerController'
+      views: {
+        'menuContent': {
+            templateUrl: 'templates/register.html',
+            controller: 'registerController'
+          }
+        }
     })
 
-    .state('rate',{
+    .state('app.rate',{
       url: '/rate/:id',
-      templateUrl: 'templates/rate.html',
-      controller: 'rateController'
+      views: {
+        'menuContent': {
+            templateUrl: 'templates/rate.html',
+            controller: 'rateController'
+          }
+        }
     });
 
   $urlRouterProvider
-    .otherwise('/');
+    .otherwise('/app/');
+})
+
+.controller('appController', function($scope, $location){
+  /*$scope.searchRumba = function() {
+    $location.path('/search');
+  }*/
 })
 
 .controller('homeController', function($scope, $location){
   $scope.searchRumba = function() {
-    $location.path('/search');
+    $location.path('/app/search');
   }
 })
 
@@ -121,16 +164,20 @@ angular.module('starter', ['ionic', 'ngCordova'])
     $scope.selservicios.push(servicio.id);
   }
   };
-
+  $ionicLoading.show({
+      template: 'Cargando...'
+    });
   //listar los establecimientos
   $http.get('http://appmovil.joalar.com/web/index.php?r=establecimiento/list-establecimiento')
   .then(function (response){
     $scope.establecimientos = response.data;
-    $scope.total = $scope.establecimientos.length;
+    $scope.total = $scope.establecimientos.length+' coincidencias';
+    $ionicLoading.hide();
   })
 })
 
-.controller('detailController', function($scope, $ionicHistory, $ionicLoading, $cordovaGeolocation, $ionicModal){
+.controller('detailController', function($scope, $ionicHistory, $ionicLoading,
+  $cordovaGeolocation, $ionicPopup, $stateParams, $window, $location, $http, $timeout){
   $scope.volver = function() {
     $ionicHistory.goBack();
   }
@@ -152,51 +199,284 @@ angular.module('starter', ['ionic', 'ngCordova'])
     console.log("Could not get location");
   });
 
-  //funciones para el modal
-  $ionicModal.fromTemplateUrl('modal.html', {
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal) {
-    $scope.modal = modal
-  })
+  // Confirm popup code
+  $scope.showConfirm = function() {
 
-  $scope.openModal = function() {
-    $scope.modal.show();
-  }
-
-  $scope.closeModal = function() {
-    $scope.modal.hide();
+      //$window.localStorage.clear();
+     var confirmPopup = $ionicPopup.confirm({
+        title: 'Deseas hacer check-in?',
+        template: 'Al hacer check-in en este establecimiento podras calificar luego tu experiencia',
+        cancelText: 'Cancelar',
+        okText: 'Claro!',
+        okType: 'button-assertive'
+     });
+     confirmPopup.then(function(res) {
+        if (res) {
+          if($window.localStorage['user_id'] == null)
+              $location.path('/app/login/'+$stateParams.id);
+          else
+              hacerCheckin();
+        }
+     });
+     /*$timeout(function() {
+     confirmPopup.close(); //close the popup after 3 seconds for some reason
+  }, 3000);*/
   };
+  //funcion para hacer el checkin, primero se obtiene la georeferenciacion y luego se llama la URL del server
+  var hacerCheckin = function(){
+    $ionicLoading.show({
+        template: 'Cargando...'
+      });
+    $cordovaGeolocation.getCurrentPosition(options).then(function(position){
+      $http.get('http://localhost/basic/web/index.php?r=checkin/create-checkin&cliente='
+                  +$window.localStorage['user_id']+'&establecimiento='+$stateParams.id+'&latitud='
+                  +position.coords.latitude+'&longitud='+position.coords.longitude)
+      .then(function(response){
+        $ionicLoading.hide();
+        if(response.data != 0 && response.data != -1){
+          var alertPopup = $ionicPopup.alert({
+             title: 'Que bien! El check-in ha sido registrado!',
+             template: '',
+             okText: 'Aceptar',
+             okType: 'button-assertive'
+          });
+          alertPopup.then(function(res) {
+          });
+          $timeout(function() {
+          alertPopup.close(); //close the popup after 3 seconds for some reason
+           }, 3000);
+        } else {
+          var alertPopup = $ionicPopup.alert({
+             title: 'Ops! Parece que se presento un error',
+             template: '',
+             okText: 'Aceptar',
+             okType: 'button-assertive'
+          });
+          alertPopup.then(function(res) {
+          });
+          $timeout(function() {
+          alertPopup.close(); //close the popup after 3 seconds for some reason
+           }, 3000);
+        }
+      });
+    }, function(error){
+      $ionicLoading.hide();
+      $http.get('http://localhost/basic/web/index.php?r=checkin/create-checkin&cliente='
+                  +$window.localStorage['user_id']+'&establecimiento='+$stateParams.id+'&latitud=null&longitud=null')
+      .then(function(response){
+        $ionicLoading.hide();
+        if(response.data != 0 && response.data != -1){
+          var alertPopup = $ionicPopup.alert({
+             title: 'Que bien! El check-in ha sido registrado!',
+             template: '',
+             okText: 'Aceptar',
+             okType: 'button-assertive'
+          });
+          alertPopup.then(function(res) {
+          });
+          $timeout(function() {
+          alertPopup.close(); //close the popup after 3 seconds for some reason
+           }, 3000);
+        } else {
+          var alertPopup = $ionicPopup.alert({
+             title: 'Ops! Parece que se presento un error',
+             template: '',
+             okText: 'Aceptar',
+             okType: 'button-assertive'
+          });
+          alertPopup.then(function(res) {
+          });
+          $timeout(function() {
+          alertPopup.close(); //close the popup after 3 seconds for some reason
+           }, 3000);
+        }
+      });
+    });
 
-  $scope.$on('$destroy', function() {
-    $scope.modal.remove();
+  };
+})
+
+.controller('checkinController', function($scope, $ionicHistory, $http, $ionicLoading, $window){
+  //funcion para el boton volver
+  $scope.volver = function() {
+    $ionicHistory.goBack();
+  }
+  $ionicLoading.show({
+      template: 'Cargando...'
+    });
+  $http.get('http://localhost/basic/web/index.php?r=checkin/list-checkins&id='+$window.localStorage['user_id'])
+  .then(function(response){
+    $scope.checkins = response.data;
+    $scope.total = $scope.checkins.length+' Check-In';
+    $ionicLoading.hide();
   });
 })
 
-.controller('checkinController', function($scope, $ionicHistory, $http, $ionicLoading){
+.controller('loginController', function($scope, $ionicHistory, $http, $ionicLoading, $ionicPopup, $stateParams, $window, $location, $timeout){
+
+  $scope.$on('$stateChangeSuccess', function () {
+    if($window.localStorage['user_id'] != null)
+       $location.path('/');
+  });
+
+  $scope.email = '';
   //funcion para el boton volver
   $scope.volver = function() {
     $ionicHistory.goBack();
   }
+
+  $scope.showAlert = function() {
+     var alertPopup = $ionicPopup.alert({
+        title: 'Vaya! Parece que no estas registrado',
+        template: '',
+        okText: 'Aceptar',
+        okType: 'button-assertive'
+     });
+     alertPopup.then(function(res) {
+     });
+     $timeout(function() {
+     alertPopup.close(); //close the popup after 3 seconds for some reason
+      }, 3000);
+  };
+
+  $scope.iniciarSesion = function(){
+    if(this.email != ''){
+      $http.get('http://localhost/basic/web/index.php?r=cliente/search-cliente&email='+this.email)
+      .then(function(response){
+        if(response.data != -1){
+          $window.localStorage['user_id'] = response.data;
+          if($stateParams.return != -1)
+            $location.path('/app/detail/'+$stateParams.return);
+          else
+            $location.path('/');
+        } else {
+          $scope.showAlert();
+        }
+      })
+    }
+  }
+
+  $scope.registro = function(){
+    if($stateParams.return != -1)
+      $location.path('/app/register/'+$stateParams.return);
+    else
+      $location.path('/app/register/-1');
+  }
+
 })
 
-.controller('loginController', function($scope, $ionicHistory, $http, $ionicLoading){
+.controller('registerController', function($scope, $ionicHistory, $http, $ionicLoading, $ionicPopup, $stateParams, $window, $location, $timeout, $filter){
+  $scope.$on('$stateChangeSuccess', function () {
+    if($window.localStorage['user_id'] != null)
+       $location.path('/');
+  });
+
+  $scope.email = '';
+  $scope.genero = 'Femenino';
+  $scope.f_nac ={value: new Date(1901,01,01)};
+  var error = '';
+
   //funcion para el boton volver
   $scope.volver = function() {
     $ionicHistory.goBack();
   }
+
+  $scope.showAlert = function() {
+     var alertPopup = $ionicPopup.alert({
+        title: error,
+        template: '',
+        scope: $scope,
+        okText: 'Aceptar',
+        okType: 'button-assertive'
+     });
+     alertPopup.then(function(res) {
+     });
+     $timeout(function() {
+     alertPopup.close(); //close the popup after 3 seconds for some reason
+      }, 3000);
+  };
+
+  $scope.registrarCliente = function(){
+    this.f_nac = $filter('date')(new Date(this.f_nac.value),'yyyy-MM-dd');
+    console.log(this.email+this.f_nac);
+    if(this.email != '' && this.f_nac != null){
+
+      $http.get('http://localhost/basic/web/index.php?r=cliente/create-cliente&email='+this.email+'&genero='+this.genero+'&f_nac='+this.f_nac)
+      .then(function(response){
+        if(response.data == -1){
+           error = 'Ops!! Se ha presentado un error';
+           $scope.showAlert();
+        } else if(response.data == 0){
+          error = 'Vaya!! Parece que ya estás registrado, intenta iniciar sesión';
+          $scope.showAlert();
+        } else {
+          $window.localStorage['user_id'] = response.data;
+          if($stateParams.return != -1)
+            $location.path('/app/detail/'+$stateParams.return);
+          else
+            $location.path('/');
+        }
+      })
+    }
+  }
+
+  $scope.login = function(){
+    if($stateParams.return != -1)
+      $location.path('/app/login/'+$stateParams.return);
+    else
+      $location.path('/app/login/-1');
+  }
 })
 
-.controller('registerController', function($scope, $ionicHistory, $http, $ionicLoading){
+.controller('rateController', function($scope, $ionicHistory, $http, $ionicLoading, $stateParams, $filter, $ionicPopup, $timeout, $location){
+  $scope.puntaje = "2";
   //funcion para el boton volver
   $scope.volver = function() {
     $ionicHistory.goBack();
   }
-})
+  $ionicLoading.show({
+      template: 'Cargando...'
+    });
+  $http.get('http://localhost/basic/web/index.php?r=checkin/list-checkin&id='+$stateParams.id)
+    .then(function(response){
+      $scope.fecha = Date.parse(response.data.Fecha);
+      $scope.establecimiento = response.data.Nombre;
+      $ionicLoading.hide();
+    });
 
-.controller('rateController', function($scope, $ionicHistory, $http, $ionicLoading){
-  //funcion para el boton volver
-  $scope.volver = function() {
-    $ionicHistory.goBack();
+  $scope.registrar = function(){
+    //console.log(this.puntaje + " " + this.observaciones);
+    $ionicLoading.show({
+          template: 'Cargando...'
+        });
+    $http.get('http://localhost/basic/web/index.php?r=calificacion/create-calificacion&puntaje='+this.puntaje+'&checkin='+$stateParams.id+'&observaciones='+this.observaciones)
+    .then(function(response){
+      if(response.data == 0 || response.data == -1){
+        var alertPopup = $ionicPopup.alert({
+           title: 'Ops!! Se ha presentado un error',
+           template: '',
+           okText: 'Aceptar',
+           okType: 'button-assertive'
+        });
+        alertPopup.then(function(res) {
+        });
+        $timeout(function() {
+        alertPopup.close(); //close the popup after 3 seconds for some reason
+         }, 3000);
+      } else {
+        var alertPopup = $ionicPopup.alert({
+           title: 'Tu calificación ha sido almacenada, muchas gracias!',
+           template: '',
+           okText: 'Aceptar',
+           okType: 'button-assertive'
+        });
+        alertPopup.then(function(res) {
+        });
+        $timeout(function() {
+        alertPopup.close(); //close the popup after 3 seconds for some reason
+         }, 3000);
+         $location.path('/app/checkins');
+      }
+    });
   }
 })

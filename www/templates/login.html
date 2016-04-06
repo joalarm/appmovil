@@ -1,9 +1,6 @@
 <ion-nav-bar>
 </ion-nav-bar>
 <ion-view title="Iniciar Sesión">
-  <ion-nav-buttons side="left">
-    <button class="button icon ion-navicon"></button>
-  </ion-nav-buttons>
   <ion-nav-buttons side="right">
     <button class="button" ng-click="volver()">Volver</button>
   </ion-nav-buttons>
@@ -12,10 +9,10 @@
     <div class="list list-inset" style="text-align: center;">
       <label class="item item-input item-stacked-label">
         <span class="input-label">E-mail</span>
-        <input type="email" placeholder="ejemplo@ejemplo.com">
+        <input type="email" ng-model="email" placeholder="ejemplo@ejemplo.com">
       </label>
-      <button class="item button button-assertive button-block">Acceder</button>
-      <button class="item button button-assertive button-block">Registrarse</button>
+      <button class="item button button-assertive button-block" ng-click="iniciarSesion()">Acceder</button>
+      <button class="item button button-assertive button-block" ng-click="registro()">Registrarse</button>
     </div>
   </div>
   </ion-content>

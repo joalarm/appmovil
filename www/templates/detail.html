@@ -2,7 +2,7 @@
 </ion-nav-bar>
 <ion-view title="Establecimiento">
   <ion-nav-buttons side="left">
-    <button class="button icon ion-navicon"></button>
+    <button class="button icon ion-navicon" menu-toggle="left"></button>
   </ion-nav-buttons>
   <ion-nav-buttons side="right">
     <button class="button" ng-click="volver()">Volver</button>
@@ -16,7 +16,7 @@
             <ion-item class="item-thumbnail-left item-button-right item-text-wrap">
               <img ng-src="http://appmovil.joalar.com/web/img/establecimientos/52crew3.jpg">
               <h2>Establecimiento X</h2>
-              <button class="button button-assertive" ng-click="openModal()">
+              <button class="button button-assertive" ng-click="showConfirm()">
                 <i class="icon ion-location"></i>
               </button>
             </ion-item>

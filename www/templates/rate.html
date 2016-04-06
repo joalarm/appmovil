@@ -2,28 +2,28 @@
 </ion-nav-bar>
 <ion-view title="Calificar">
   <ion-nav-buttons side="left">
-    <button class="button icon ion-navicon"></button>
+    <button class="button icon ion-navicon" menu-toggle="left"></button>
   </ion-nav-buttons>
   <ion-nav-buttons side="right">
     <button class="button" ng-click="volver()">Volver</button>
   </ion-nav-buttons>
   <ion-content>
   <div class="col col-center padding">
-    <h3 style="font-family: Custom;">El dia [dia] visitaste [establecimiento], como fue tu experiencia?</h3>
+    <h4 style="font-family: Custom;">El dia {{fecha | date:'d - MMM - y'}} visitaste {{establecimiento}}, como fue tu experiencia?</h3>
   <div class="list list-inset">
     <label class="item item-input item-select">
       <span class="input-label">Te sientes:</span>
-      <select>
-        <option>Satisfecho</option>
-        <option>Conforme</option>
-        <option>Insatisfecho</option>
+      <select ng-model="puntaje">
+        <option value="1">Satisfecho</option>
+        <option value="2">Conforme</option>
+        <option value="3">Insatisfecho</option>
       </select>
     </label>
     <label class="item item-input item-stacked-label">
       <span class="input-label">Que más nos puedes decir?</span>
-      <textarea></textarea>
+      <textarea ng-model="observaciones"></textarea>
     </label>
-    <button class="item button button-assertive button-block">Enviar</button>
+    <button class="item button button-assertive button-block" ng-click="registrar()">Enviar</button>
   </div>
 </div>
 </ion-content>
