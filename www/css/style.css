@@ -52,12 +52,21 @@ div.itemRumba{
 	background-image: url('../img/rumba.jpg');
 }
 
+div.itemRumba p.advanced-background-title{
+  color: #db3bf5 !important;
+}
+
 div.itemCoctel:hover{
   opacity: 0.7;
 }
 
 div.itemCoctel{
 	background-image: url('../img/coctel.jpg');
+  color: #ff6767 !important;
+}
+
+div.itemCoctel p.advanced-background-title{
+  color: #ff6767 !important;
 }
 
 div.itemEspecial:hover{
@@ -66,6 +75,22 @@ div.itemEspecial:hover{
 
 div.itemEspecial{
 	background-image: url('../img/especial.jpg');
+}
+
+div.itemEspecial p.advanced-background-title{
+  color: #1f5bf2 !important;
+}
+
+div.itemMusica:hover{
+  opacity: 0.7;
+}
+
+div.itemMusica{
+	background-image: url('../img/musica.jpg');
+}
+
+div.itemMusica p.advanced-background-title{
+  color: #7a7a7a !important;
 }
 
 .advanced-background {
@@ -81,7 +106,6 @@ p.advanced-background-title {
   font-size: 1.6em;
   width: 100%;
   font-weight: bold;
-  color: #ff6767;
   overflow: visible;
   text-shadow: 2px 2px black;
   font-family: Custom;
@@ -132,7 +156,30 @@ p.advanced-background-subtitle {
   padding: 6px;
 }
 
-#map{
+.mapa div{
   width: 100%;
-  height: 150px;
+  height: 250px;
+}
+
+.buttonServicio{
+  float: left;
+  border: solid #D80027 2px;
+  border-radius: 5px;
+  padding: 2px;
+  margin: 3px;
+}
+
+div.gallery-view div.row{
+  height: auto !important;
+}
+
+div.image-container{
+  height: 120px;
+  width: 120px;
+}
+
+div.image-container img{
+  height: 100%;
+  width: auto;
+
 }

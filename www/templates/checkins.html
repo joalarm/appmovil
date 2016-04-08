@@ -4,13 +4,15 @@
   <ion-nav-buttons side="left">
     <button class="button icon ion-navicon" menu-toggle="left"></button>
   </ion-nav-buttons>
-  <ion-nav-buttons side="right">
-    <button class="button" ng-click="volver()">Volver</button>
-  </ion-nav-buttons>
     <div class="bar bar-subheader subtitulo">
       <p class="subtitulo1">{{total}}</p>
     </div>
     <ion-content class="has-subheader padding">
+      <div class="card" ng-if="!checkins.length">
+          <div class="item item-text-wrap" style="text-align:center;">
+          Vaya! No has registrado ningun Check-In, registra tus Check-Ins cuando estés en los establecimentos para que puedas calificarlos.
+          </div>
+      </div>
           <ion-list>
             <ion-item class="item-thumbnail-right item-text-wrap" ng-repeat="checkin in checkins">
                 <img ng-src="http://appmovil.joalar.com/web/img/establecimientos/{{checkin.Icono}}">

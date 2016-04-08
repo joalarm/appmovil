@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic', 'ngCordova'])
+angular.module('starter', ['ionic', 'ngCordova', 'ion-gallery'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -23,8 +23,11 @@ angular.module('starter', ['ionic', 'ngCordova'])
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider){
+.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider, ionGalleryConfigProvider){
   $ionicConfigProvider.tabs.position('bottom');
+
+  ionGalleryConfigProvider.setGalleryConfig({
+                          action_label: 'Cerrar'});
 
   $stateProvider
     .state('app',{
@@ -45,7 +48,7 @@ angular.module('starter', ['ionic', 'ngCordova'])
     })
 
     .state('app.search',{
-      url: '/search',
+      url: '/search/:id',
       views: {
         'menuContent': {
             templateUrl: 'templates/search.html',
@@ -94,12 +97,32 @@ angular.module('starter', ['ionic', 'ngCordova'])
         }
     })
 
+    .state('app.user',{
+      url: '/user',
+      views: {
+        'menuContent': {
+            templateUrl: 'templates/user.html',
+            controller: 'userController'
+          }
+        }
+    })
+
     .state('app.rate',{
       url: '/rate/:id',
       views: {
         'menuContent': {
             templateUrl: 'templates/rate.html',
             controller: 'rateController'
+          }
+        }
+    })
+
+    .state('app.about',{
+      url: '/about',
+      views: {
+        'menuContent': {
+            templateUrl: 'templates/about.html',
+            controller: 'aboutController'
           }
         }
     });
@@ -116,13 +139,29 @@ angular.module('starter', ['ionic', 'ngCordova'])
 
 .controller('homeController', function($scope, $location){
   $scope.searchRumba = function() {
-    $location.path('/app/search');
+    $location.path('/app/search/1');
+  };
+
+  $scope.searchCopa = function() {
+    $location.path('/app/search/2');
+  };
+
+  $scope.searchEspecial = function() {
+    $location.path('/app/search/3');
+  };
+
+  $scope.searchMusica = function() {
+    $location.path('/app/search/4');
+  };
+
+  $scope.search = function() {
+    $location.path('/app/search/0');
   }
 })
 
-.controller('searchController', function($scope, $ionicHistory, $ionicModal, $http, $ionicLoading){
+.controller('searchController', function($scope, $ionicHistory, $stateParams, $ionicModal, $http, $ionicLoading){
   $scope.selservicios = [];
-
+  $scope.buscar = {};
   //funcion para el boton volver
   $scope.volver = function() {
     $ionicHistory.goBack();
@@ -143,6 +182,20 @@ angular.module('starter', ['ionic', 'ngCordova'])
   $scope.closeModal = function() {
     $scope.modal.hide();
     console.log($scope.selservicios);
+    var querystring = 'http://appmovil.joalar.com/web/index.php?r=establecimiento/list-establecimiento';
+    angular.forEach($scope.selservicios, function(item) {
+      querystring = querystring + "&servicios[]=" + item;
+    });
+    $ionicLoading.show({
+        template: 'Cargando...'
+      });
+    $http.get(querystring)
+    .then(function (response){
+      $scope.busqueda = 0;
+      $scope.establecimientos = response.data;
+      $scope.total = $scope.establecimientos.length+' coincidencias';
+      $ionicLoading.hide();
+    });
   };
 
   $scope.$on('$destroy', function() {
@@ -150,7 +203,7 @@ angular.module('starter', ['ionic', 'ngCordova'])
   });
 
   //listar los servicios del modal
-  $http.get('http://localhost/basic/web/index.php?r=producto-servicio/list-servicio')
+  $http.get('http://appmovil.joalar.com/web/index.php?r=producto-servicio/list-servicio')
   .then(function (response){
     $scope.servicios = response.data;
   })
@@ -164,40 +217,109 @@ angular.module('starter', ['ionic', 'ngCordova'])
     $scope.selservicios.push(servicio.id);
   }
   };
-  $ionicLoading.show({
-      template: 'Cargando...'
-    });
+
   //listar los establecimientos
-  $http.get('http://appmovil.joalar.com/web/index.php?r=establecimiento/list-establecimiento')
-  .then(function (response){
-    $scope.establecimientos = response.data;
-    $scope.total = $scope.establecimientos.length+' coincidencias';
-    $ionicLoading.hide();
-  })
+  //$scope.$on('$stateChangeSuccess', function () {
+    $scope.clearSearch = function(){
+      $scope.buscar.Nombre = '';
+    }
+    $ionicLoading.show({
+        template: 'Cargando...'
+      });
+    switch($stateParams.id){
+      case '0':
+          $http.get('http://appmovil.joalar.com/web/index.php?r=establecimiento/list-establecimiento')
+          .then(function (response){
+            $scope.busqueda = 1;
+            $scope.establecimientos = response.data;
+            $scope.total = $scope.establecimientos.length+' coincidencias';
+            $ionicLoading.hide();
+          });
+          break;
+      case '1':
+          $http.get('http://appmovil.joalar.com/web/index.php?r=establecimiento/list-establecimiento&servicios[]=43')
+          .then(function (response){
+            $scope.busqueda = 0;
+            $scope.establecimientos = response.data;
+            $scope.total = $scope.establecimientos.length+' coincidencias';
+            $ionicLoading.hide();
+          });
+          break;
+      case '2':
+          $http.get('http://appmovil.joalar.com/web/index.php?r=establecimiento/list-establecimiento&servicios[]=44')
+          .then(function (response){
+            $scope.busqueda = 0;
+            $scope.establecimientos = response.data;
+            $scope.total = $scope.establecimientos.length+' coincidencias';
+            $ionicLoading.hide();
+          });
+          break;
+      case '3':
+          $http.get('http://appmovil.joalar.com/web/index.php?r=establecimiento/list-establecimiento&servicios[]=46')
+          .then(function (response){
+            $scope.busqueda = 0;
+            $scope.establecimientos = response.data;
+            $scope.total = $scope.establecimientos.length+' coincidencias';
+            $ionicLoading.hide();
+          });
+          break;
+      case '4':
+          $http.get('http://appmovil.joalar.com/web/index.php?r=establecimiento/list-establecimiento&servicios[]=45')
+          .then(function (response){
+            $scope.busqueda = 0;
+            $scope.establecimientos = response.data;
+            $scope.total = $scope.establecimientos.length+' coincidencias';
+            $ionicLoading.hide();
+          });
+          break;
+      default:
+          $ionicLoading.hide();
+          break;
+    }
+  //});
+  $scope.$on('$ionicView.enter', function () {
+    $ionicHistory.clearCache();
+  });
 })
 
 .controller('detailController', function($scope, $ionicHistory, $ionicLoading,
-  $cordovaGeolocation, $ionicPopup, $stateParams, $window, $location, $http, $timeout){
+  $cordovaGeolocation, $ionicPopup, $stateParams, $window, $location, $http, $timeout, $state){
   $scope.volver = function() {
     $ionicHistory.goBack();
   }
-  var options = {timeout: 10000, enableHighAccuracy: true};
-
-  $cordovaGeolocation.getCurrentPosition(options).then(function(position){
-
-    var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-
+  $ionicLoading.show({
+      template: 'Cargando...'
+    });
+  $http.get('http://appmovil.joalar.com/web/index.php?r=establecimiento/list-establecimiento-id&id='+$stateParams.id)
+  .then(function (response){
+    $scope.info = response.data.info;
+    $scope.servicios = response.data.servicios;
+    $scope.productos = response.data.productos;
+    $scope.galerias = response.data.galerias;
+    $ionicLoading.hide();
+    var latLng = new google.maps.LatLng($scope.info.Latitud, $scope.info.Longitud);
     var mapOptions = {
-      center: latLng,
-      zoom: 15,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-
-    $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
-
-  }, function(error){
-    console.log("Could not get location");
+        center: latLng,
+        zoom: 18,
+        maxZoom: 18,
+        minZoom: 18,
+        zoomControl: false,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        disableDoubleClickZoom: true,
+        draggable: false,
+        streetViewControl: false,
+        mapTypeControl: false
+      };
+    $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    google.maps.event.addListenerOnce($scope.map, 'idle', function(){
+      var marker = new google.maps.Marker({
+          map: $scope.map,
+          animation: google.maps.Animation.DROP,
+          position: latLng
+        });
+      });
   });
+
 
   // Confirm popup code
   $scope.showConfirm = function() {
@@ -227,8 +349,9 @@ angular.module('starter', ['ionic', 'ngCordova'])
     $ionicLoading.show({
         template: 'Cargando...'
       });
+    var options = {timeout: 10000, enableHighAccuracy: true};
     $cordovaGeolocation.getCurrentPosition(options).then(function(position){
-      $http.get('http://localhost/basic/web/index.php?r=checkin/create-checkin&cliente='
+      $http.get('http://appmovil.joalar.com/web/index.php?r=checkin/create-checkin&cliente='
                   +$window.localStorage['user_id']+'&establecimiento='+$stateParams.id+'&latitud='
                   +position.coords.latitude+'&longitud='+position.coords.longitude)
       .then(function(response){
@@ -261,7 +384,7 @@ angular.module('starter', ['ionic', 'ngCordova'])
       });
     }, function(error){
       $ionicLoading.hide();
-      $http.get('http://localhost/basic/web/index.php?r=checkin/create-checkin&cliente='
+      $http.get('http://appmovil.joalar.com/web/index.php?r=checkin/create-checkin&cliente='
                   +$window.localStorage['user_id']+'&establecimiento='+$stateParams.id+'&latitud=null&longitud=null')
       .then(function(response){
         $ionicLoading.hide();
@@ -301,14 +424,16 @@ angular.module('starter', ['ionic', 'ngCordova'])
   $scope.volver = function() {
     $ionicHistory.goBack();
   }
-  $ionicLoading.show({
-      template: 'Cargando...'
+  $scope.$on('$stateChangeSuccess', function () {
+    $ionicLoading.show({
+        template: 'Cargando...'
+      });
+    $http.get('http://appmovil.joalar.com/web/index.php?r=checkin/list-checkins&id='+$window.localStorage['user_id'])
+    .then(function(response){
+      $scope.checkins = response.data;
+      $scope.total = $scope.checkins.length+' Check-In';
+      $ionicLoading.hide();
     });
-  $http.get('http://localhost/basic/web/index.php?r=checkin/list-checkins&id='+$window.localStorage['user_id'])
-  .then(function(response){
-    $scope.checkins = response.data;
-    $scope.total = $scope.checkins.length+' Check-In';
-    $ionicLoading.hide();
   });
 })
 
@@ -341,7 +466,7 @@ angular.module('starter', ['ionic', 'ngCordova'])
 
   $scope.iniciarSesion = function(){
     if(this.email != ''){
-      $http.get('http://localhost/basic/web/index.php?r=cliente/search-cliente&email='+this.email)
+      $http.get('http://appmovil.joalar.com/web/index.php?r=cliente/search-cliente&email='+this.email)
       .then(function(response){
         if(response.data != -1){
           $window.localStorage['user_id'] = response.data;
@@ -401,7 +526,7 @@ angular.module('starter', ['ionic', 'ngCordova'])
     console.log(this.email+this.f_nac);
     if(this.email != '' && this.f_nac != null){
 
-      $http.get('http://localhost/basic/web/index.php?r=cliente/create-cliente&email='+this.email+'&genero='+this.genero+'&f_nac='+this.f_nac)
+      $http.get('http://appmovil.joalar.com/web/index.php?r=cliente/create-cliente&email='+this.email+'&genero='+this.genero+'&f_nac='+this.f_nac)
       .then(function(response){
         if(response.data == -1){
            error = 'Ops!! Se ha presentado un error';
@@ -437,9 +562,9 @@ angular.module('starter', ['ionic', 'ngCordova'])
   $ionicLoading.show({
       template: 'Cargando...'
     });
-  $http.get('http://localhost/basic/web/index.php?r=checkin/list-checkin&id='+$stateParams.id)
+  $http.get('http://appmovil.joalar.com/web/index.php?r=checkin/list-checkin&id='+$stateParams.id)
     .then(function(response){
-      $scope.fecha = Date.parse(response.data.Fecha);
+      $scope.fecha = response.data.Fecha;
       $scope.establecimiento = response.data.Nombre;
       $ionicLoading.hide();
     });
@@ -449,7 +574,7 @@ angular.module('starter', ['ionic', 'ngCordova'])
     $ionicLoading.show({
           template: 'Cargando...'
         });
-    $http.get('http://localhost/basic/web/index.php?r=calificacion/create-calificacion&puntaje='+this.puntaje+'&checkin='+$stateParams.id+'&observaciones='+this.observaciones)
+    $http.get('http://appmovil.joalar.com/web/index.php?r=calificacion/create-calificacion&puntaje='+this.puntaje+'&checkin='+$stateParams.id+'&observaciones='+this.observaciones)
     .then(function(response){
       if(response.data == 0 || response.data == -1){
         var alertPopup = $ionicPopup.alert({
@@ -479,4 +604,72 @@ angular.module('starter', ['ionic', 'ngCordova'])
       }
     });
   }
+})
+
+.controller('userController', function($scope, $ionicHistory, $http, $ionicLoading, $location, $window){
+  $scope.$on('$stateChangeSuccess', function () {
+    if($window.localStorage['user_id'] == null)
+       $location.path('/app/login/-1');
+    $ionicLoading.show({
+             template: 'Cargando...'
+           });
+    $http.get('http://appmovil.joalar.com/web/index.php?r=cliente/search-cliente-id&id='+$window.localStorage['user_id'])
+      .then(function(response){
+        $scope.email = response.data.Email;
+        $scope.genero = response.data.Genero;
+        $scope.f_nac = response.data.F_nacimiento;
+        $ionicLoading.hide();
+      });
+      $ionicLoading.hide();
+  });
+
+  //funcion para el boton volver
+  $scope.volver = function() {
+    $ionicHistory.goBack();
+  }
+
+  $scope.logout = function(){
+    $window.localStorage.clear();
+    $location.path('/');
+  }
+})
+
+.directive('tooltip', function () {
+    return {
+        restrict: 'C',
+        link: function (scope, element, attrs) {
+            if (attrs.title) {
+                var $element = $(element);
+                $element.attr("title", attrs.title)
+                $element.tooltipster({
+                    animation: attrs.animation,
+                    trigger: "click",
+                    position: "top",
+                    positionTracker: true,
+                    maxWidth: 500,
+                    contentAsHTML: true
+                });
+            }
+        }
+    };
+})
+
+.controller('aboutController', function($scope, $ionicHistory){
+
+})
+
+.filter('matchNombre', function() {
+  return function( items, nombre) {
+    if(angular.isUndefined(nombre)){
+      return items;
+    } else {
+    var filtered = [];
+    angular.forEach(items, function(item) {
+      if(item.Nombre.toUpperCase().indexOf(nombre.toUpperCase()) != -1) {
+        filtered.push(item);
+      }
+    });
+    return filtered;
+  }
+  };
 })

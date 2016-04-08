@@ -1,0 +1,26 @@
+<ion-nav-bar>
+</ion-nav-bar>
+<ion-view title="Mis Datos">
+  <ion-nav-buttons side="left">
+    <button class="button icon ion-navicon" menu-toggle="left"></button>
+  </ion-nav-buttons>
+  <ion-content>
+    <div class="col col-center">
+      <div class="list list-inset">
+        <ion-item class="item-text-wrap">
+          <h2>E-mail</h2>
+          <p>{{email}}</p>
+        </ion-item>
+        <ion-item class="item-text-wrap">
+          <h2>Genero</h2>
+          <p>{{genero}}</p>
+        </ion-item>
+        <ion-item class="item-text-wrap">
+          <h2>Fecha de nacimiento</h2>
+          <p>{{f_nac}}</p>
+        </ion-item>
+          <button class="item button button-block button-assertive" ng-click="logout()">Cerrar Sesión</button>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

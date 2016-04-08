@@ -9,19 +9,25 @@
       <button class="button" ng-click="volver()">Volver</button>
     </ion-nav-buttons>
     <div class="bar bar-subheader subtitulo item-icon-right">
-      <p class="subtitulo1">{{total}}</p>
-      <button class="button button-clear icon ion-more" ng-click="openModal()"></button>
+      <p class="subtitulo1" ng-if="busqueda == 0">{{total}}</p>
+      <input type="text" placeholder="Buscar..." ng-if="busqueda == 1" ng-model="buscar.Nombre" style="width: 100%; margin-left: 4px;">
+      <button class="button button-clear button-assertive icon " ng-if="busqueda == 0" ng-click="openModal()">Filtrar</button>
+      <button class="button button-clear icon ion-android-close" ng-if="busqueda == 1" ng-click="clearSearch()"></button>
     </div>
     <ion-content class="has-subheader padding">
-          <ion-list>
-            <ion-item class="item-thumbnail-left item-text-wrap" ng-repeat="establecimiento in establecimientos" href="#/app/detail/{{establecimiento.id}}">
+      <div class="card" ng-if="!establecimientos.length">
+          <div class="item item-text-wrap" style="text-align:center;">
+          Vaya! No hemos obtenido ningun resultado, prueba utilizando menos filtros...
+          </div>
+      </div>
+      <ion-list>
+            <ion-item class="item-thumbnail-left item-text-wrap" ng-repeat="establecimiento in establecimientos | matchNombre:buscar.Nombre" ui-sref="app.detail({id: establecimiento.id})">
                 <img ng-src="http://appmovil.joalar.com/web/img/establecimientos/{{establecimiento.Icono}}">
                 <h2>{{establecimiento.Nombre}}</h2>
                 <p>{{establecimiento.Direccion}}</p>
                 <p>{{establecimiento.Telefono}}</p>
             </ion-item>
           </ion-list>
-
           <script id="modal.html" type="text/ng-template">
             <ion-modal-view class="modalCustom">
               <ion-content>
